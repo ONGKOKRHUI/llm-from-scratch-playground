@@ -1,0 +1,12 @@
+llm-playground/
+├── app.py                 # Main Streamlit application entry point
+├── requirements.txt       # Dependencies
+├── modules/
+│   ├── tokenizer_viz.py   # Logic for Tokenization tab
+│   ├── training_demo.py   # The NanoGPT training loop
+│   ├── inference.py       # Handling generation (Temp, Top-K)
+│   └── evaluation.py      # Metric calculations (BLEU, Perplexity)
+├── models/
+│   └── tiny_gpt.py        # The PyTorch model definition
+└── data/
+    └── tinyshakespeare.txt
