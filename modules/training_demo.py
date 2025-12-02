@@ -37,15 +37,51 @@ Let us kill him, and we'll have corn at our own price.
 
 class TinyLLM(nn.Module):
     def __init__(self, vocab_size, n_embd=32):
+        """
+        Each character is stored as a point in a 32-dimensional space.
+
+        The model learns:
+
+        which characters are close together
+
+        which are far apart
+
+        which directions represent common patterns
+
+        That's how embeddings represent meaning.
+
+        If your vocabulary = 50 characters, then:
+        Embedding: 32 numbers
+        ↓
+        Linear layer: produces 50 numbers
+        ↓
+        Softmax: turns them into probabilities for each of the 50 tokens
+        
+        In LLM, the LM Head always maps:
+
+        hidden_size → vocab_size
+
+        For GPT-2:
+
+        hidden_size = 768
+
+        vocab_size ≈ 50k
+
+        For GPT-3:
+
+        hidden_size = 12,288
+
+        vocab_size = 50k
+        """
         super().__init__()
         # 1. Token Embeddings: Looking up the "meaning" vector for each token
         self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
         
-        # 2. A tiny "Linear" head to predict the next token logits
+        # 2. A tiny "Linear" head to predict the next token logits acoss all possible tokens
         # In a real GPT, there are Self-Attention layers here!
         self.lm_head = nn.Linear(n_embd, vocab_size)
 
-    def forward(self, idx, targets=None):
+    def forward(self, idx, targets=None): 
         # idx and targets are both (B,T) tensor of integers
         
         # Get embeddings
