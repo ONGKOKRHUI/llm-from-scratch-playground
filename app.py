@@ -2,7 +2,7 @@
 import streamlit as st
 
 # Import the modules (we will create tokenizer_viz next)
-from modules import tokenizer_viz
+from modules import tokenizer_viz, training_demo
 
 # --- PAGE CONFIGURATION ---
 # This must be the first Streamlit command in the whole app
@@ -18,10 +18,10 @@ page = st.sidebar.radio(
     "Go to Project Phase:",
     [
         "1. Tokenizer Sandbox", 
-        "2. Pre-Training (Coming Soon)", 
-        "3. Generation (Coming Soon)",
-        "4. Post-Training (Coming Soon)",
-        "5. Evaluation (Coming Soon)"
+        "2. Pre-Training", 
+        "3. Generation",
+        "4. Post-Training",
+        "5. Evaluation"
     ]
 )
 
@@ -32,8 +32,7 @@ st.sidebar.info("Project 1: Build an LLM Playground")
 if page == "1. Tokenizer Sandbox":
     tokenizer_viz.app()
     
-elif page == "2. Pre-Training (Coming Soon)":
-    st.title("🏗️ Pre-Training Lab")
-    st.write("This module is under construction.")
+elif page == "2. Pre-Training":
+    training_demo.app()
     
 # ... (Other pages would be similar)

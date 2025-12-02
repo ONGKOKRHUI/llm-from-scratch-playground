@@ -194,7 +194,7 @@ def app():
     with col_params:
         st.subheader("2. Hyperparameters")
         learning_rate = st.slider("Learning Rate", 0.001, 0.1, 0.01, format="%.3f")
-        max_steps = st.slider("Training Steps", 100, 2000, 500)
+        max_steps = st.slider("Training Steps", 50, 500, 100)
         batch_size = 32
         block_size = 8 # Context length
 
@@ -238,14 +238,15 @@ def app():
             loss_history.append(loss.item())
             
             # Update UI every 50 steps
-            if step % 50 == 0 or step == max_steps - 1:
+            #if step % 50 == 0 or step == max_steps - 1:
+            if step % 10 == 0:
                 # 1. Update Chart
                 chart_data = pd.DataFrame(loss_history, columns=["Loss"])
                 chart_placeholder.line_chart(chart_data)
                 
                 # 2. Update Progress
                 progress_bar.progress((step + 1) / max_steps)
-                
+                #st.experimental_rerun()
                 # 3. Generate Sample Text
                 # Context is just a zero (first char) to start generation
                 context = torch.zeros((1, 1), dtype=torch.long)
@@ -255,6 +256,6 @@ def app():
                 text_placeholder.code(decoded_text)
                 
                 # Slow down slightly so user can see updates
-                time.sleep(0.05)
+                #time.sleep(0.05)
         
         st.success(f"Training Complete! Final Loss: {loss.item():.4f}")
