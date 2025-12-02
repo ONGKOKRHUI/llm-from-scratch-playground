@@ -82,18 +82,55 @@ class TinyLLM(nn.Module):
         self.lm_head = nn.Linear(n_embd, vocab_size)
 
     def forward(self, idx, targets=None): 
-        # idx and targets are both (B,T) tensor of integers
+        """
+        Symbol	Meaning	                        Example in your code
+        B	    Batch size	                    32 sequences per training step
+        T	    Time steps (context length)	    block_size = 8 characters
+        C	    Channels / feature size	        embedding size = 32
+        So a tensor shaped (B, T, C) is:
+        B sequences, each of length T, and each token represented by C features.
+        """
+        # idx and targets are both (B,T) tensor of integers (32, 8) before embedding
         
         # Get embeddings
-        logits = self.token_embedding_table(idx) # (B,T,C)
-        logits = self.lm_head(logits) # (B,T,vocab_size)
+        logits = self.token_embedding_table(idx) # After embedding (B,T,C) (32, 8, 32)
+        logits = self.lm_head(logits) # After linear layer (B,T,vocab_size) (32, 8, vocab_size)
 
+        '''
+        Why we flatten?
+
+        Because PyTorch expects:
+
+        input	shape	meaning
+        logits	(N, C)	N predictions of C classes (32, 8, 50) -> (256, 50)
+        targets	(N)	N correct class indices (32, 8) → (256)
+
+        Our model outputs (B,T,C) and (B,T), so we flatten B*T → N.
+        
+        Cross entropy does:
+        softmax on logits
+        compares predicted probability distribution vs correct token
+        computes negative log likelihood
+        averages over all 256 positions
+        '''
         loss = None
         if targets is not None:
             B, T, C = logits.shape
-            logits = logits.view(B*T, C)
+            logits = logits.view(B*T, C) #Flatten logits for cross-entropy
             targets = targets.view(B*T)
             loss = F.cross_entropy(logits, targets)
+        
+        '''
+        At every training step:
+
+        The model predicts the next token for every position in every sequence
+
+        We calculate how wrong it was
+
+        This error drives backpropagation
+
+        The embeddings and linear layer update
+        '''
 
         return logits, loss
 
