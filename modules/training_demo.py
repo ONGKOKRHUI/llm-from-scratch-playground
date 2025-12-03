@@ -177,7 +177,6 @@ def app():
                 
                 # 2. Update Progress
                 progress_bar.progress((step + 1) / max_steps)
-                #st.experimental_rerun()
                 # 3. Generate Sample Text
                 # Convert user text to tensor (if not empty)
                 if user_context:
@@ -194,6 +193,6 @@ def app():
                 text_placeholder.code(decoded_text)
                 
                 # Slow down slightly so user can see updates
-                #time.sleep(0.05)
+                time.sleep(0.05)
         
         st.success(f"Training Complete! Final Loss: {loss.item():.4f}")
