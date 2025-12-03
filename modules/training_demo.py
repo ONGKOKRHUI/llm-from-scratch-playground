@@ -169,8 +169,8 @@ def app():
             loss_history.append(loss.item())
             
             # Update UI every 50 steps
-            if step % 50 == 0 or step == max_steps - 1:
-            #if step % 10 == 0:
+            #if step % 50 == 0 or step == max_steps - 1:
+            if step % 10 == 0:
                 # 1. Update Chart
                 chart_data = pd.DataFrame(loss_history, columns=["Loss"])
                 chart_placeholder.line_chart(chart_data)
@@ -193,6 +193,6 @@ def app():
                 text_placeholder.code(decoded_text)
                 
                 # Slow down slightly so user can see updates
-                time.sleep(0.05)
+                #time.sleep(0.05)
         
         st.success(f"Training Complete! Final Loss: {loss.item():.4f}")
