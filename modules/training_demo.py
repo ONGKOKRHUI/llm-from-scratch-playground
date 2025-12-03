@@ -180,10 +180,12 @@ def app():
         text_input = st.text_area("Corpus (The 'Internet'):", value=DEFAULT_TEXT, height=150)
         
         # Build Vocabulary
-        chars = sorted(list(set(text_input)))
+        chars = sorted(list(set(text_input))) #unique sorted list of characters
         vocab_size = len(chars)
-        vocab_to_int = { ch:i for i,ch in enumerate(chars) }
-        int_to_vocab = { i:ch for i,ch in enumerate(chars) }
+        #converting characters → token IDs
+        vocab_to_int = { ch:i for i,ch in enumerate(chars) } #assigns each character a unique integer ID
+        #converting generated token IDs → text
+        int_to_vocab = { i:ch for i,ch in enumerate(chars) } #creates the reverse lookup:
         
         # Encode data
         data_tensor = text_to_tensor(text_input, vocab_to_int)
@@ -238,8 +240,8 @@ def app():
             loss_history.append(loss.item())
             
             # Update UI every 50 steps
-            #if step % 50 == 0 or step == max_steps - 1:
-            if step % 10 == 0:
+            if step % 50 == 0 or step == max_steps - 1:
+            #if step % 10 == 0:
                 # 1. Update Chart
                 chart_data = pd.DataFrame(loss_history, columns=["Loss"])
                 chart_placeholder.line_chart(chart_data)
@@ -249,7 +251,9 @@ def app():
                 #st.experimental_rerun()
                 # 3. Generate Sample Text
                 # Context is just a zero (first char) to start generation
+                #Shape (1,1) → batch size 1, sequence length 1
                 context = torch.zeros((1, 1), dtype=torch.long)
+                
                 generated_ids = model.generate(context, max_new_tokens=100)
                 decoded_text = tensor_to_text(generated_ids[0], int_to_vocab)
                 
