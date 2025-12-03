@@ -2,7 +2,7 @@
 import streamlit as st
 
 # Import the modules (we will create tokenizer_viz next)
-from modules import tokenizer_viz, training_demo
+from modules import tokenizer_viz, training_demo, inference
 
 # --- PAGE CONFIGURATION ---
 # This must be the first Streamlit command in the whole app
@@ -34,5 +34,8 @@ if page == "1. Tokenizer Sandbox":
     
 elif page == "2. Pre-Training":
     training_demo.app()
-    
+
+elif page == "3. Generation":
+    inference.app()
+
 # ... (Other pages would be similar)

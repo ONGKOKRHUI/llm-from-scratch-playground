@@ -88,7 +88,7 @@ def app():
 
     # Model selection buttons
     sml_model_btn = st.button("🧠 Small model", type="primary")
-    big_model_btn = st.button("🤖 Big model", type="primary")
+    big_model_btn = st.button("🧠🧠 Big model", type="primary")
 
     if sml_model_btn:
         st.session_state.model_type = "small"
