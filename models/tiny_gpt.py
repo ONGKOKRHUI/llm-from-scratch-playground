@@ -5,6 +5,10 @@ from torch.nn import functional as F
 import pandas as pd
 import time
 
+# --- MODEL ARCHITECTURE (The "Brain") ---
+# This is a simplified "Bigram" Language Model.
+# In a real LLM, this would be replaced by a Transformer Block.
+
 class TinyLLM(nn.Module):
     def __init__(self, vocab_size, n_embd=32):
         """

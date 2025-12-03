@@ -7,37 +7,18 @@ import pandas as pd
 import time
 from models.tiny_gpt import TinyLLM
 from models.gpt import GPT
+import os
 
 # --- CONFIGURATION & DATA ---
-# A tiny snippet of Shakespeare for the model to learn from (Fallback data)
-DEFAULT_TEXT = """
-First Citizen:
-Before we proceed any further, hear me speak.
+data_folder = "data"
+DEFAULT_TEXT = ""
 
-All:
-Speak, speak.
-
-First Citizen:
-You are all resolved rather to die than to famish?
-
-All:
-Resolved. resolved.
-
-First Citizen:
-First, you know Caius Marcius is chief enemy to the people.
-
-All:
-We know't, we know't.
-
-First Citizen:
-Let us kill him, and we'll have corn at our own price.
-"""
-
-# --- MODEL ARCHITECTURE (The "Brain") ---
-# This is a simplified "Bigram" Language Model.
-# In a real LLM, this would be replaced by a Transformer Block.
-
-
+# Loop through all files in the folder
+for filename in os.listdir(data_folder):
+    if filename.endswith(".txt"):  # only process .txt files
+        file_path = os.path.join(data_folder, filename)
+        with open(file_path, "r", encoding="utf-8") as f:
+            DEFAULT_TEXT += f.read() + "\n"  # add newline between files
 
 # --- HELPER FUNCTIONS ---
 
