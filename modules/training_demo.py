@@ -71,12 +71,19 @@ def app():
         
         # Build Vocabulary
         chars = sorted(list(set(text_input))) #unique sorted list of characters
+        
+        chars.append("<unk>")
+
         vocab_size = len(chars)
         #converting characters → token IDs
         vocab_to_int = { ch:i for i,ch in enumerate(chars) } #assigns each character a unique integer ID
         #converting generated token IDs → text
         int_to_vocab = { i:ch for i,ch in enumerate(chars) } #creates the reverse lookup:
         
+        # Any character not in the vocab is mapped to <unk>
+        def text_to_tensor(text, vocab_to_int):
+            return torch.tensor([vocab_to_int.get(c, vocab_to_int["<unk>"]) for c in text], dtype=torch.long)
+
         # Encode data
         data_tensor = text_to_tensor(text_input, vocab_to_int)
         
@@ -110,6 +117,9 @@ def app():
 
     st.caption(f"Selected Model: {st.session_state.model_type}")
 
+    # 1. User provides initial context
+    user_context = st.text_input("Generation Prompt:", value="", placeholder="Enter a prompt here:") 
+
     start_btn = st.button("🚀 Start Training", type="primary")
 
     #------chart visualisation------
@@ -132,6 +142,10 @@ def app():
             st.warning("Please select a model first!")
             return
 
+        # Move to GPU if available (Recommended for Transformers!)
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        model = model.to(device)
+
         optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
         
         loss_history = []
@@ -141,6 +155,7 @@ def app():
         for step in range(max_steps):
             # Sample a batch of data
             xb, yb = get_batch(data_tensor, block_size, batch_size)
+            xb, yb = xb.to(device), yb.to(device)
 
             # Evaluate the loss
             logits, loss = model(xb, yb)
@@ -164,11 +179,16 @@ def app():
                 progress_bar.progress((step + 1) / max_steps)
                 #st.experimental_rerun()
                 # 3. Generate Sample Text
-                # Context is just a zero (first char) to start generation
-                #Shape (1,1) → batch size 1, sequence length 1
-                context = torch.zeros((1, 1), dtype=torch.long)
+                # Convert user text to tensor (if not empty)
+                if user_context:
+                    #unsqueeze(0) makes it batch size 1, because your model expects (batch_size, seq_len).
+                    context_tensor = text_to_tensor(user_context, vocab_to_int).unsqueeze(0)  # shape (1, seq_len)
+                else:
+                    # Context is just a zero (first char) to start generation
+                    #Shape (1,1) → batch size 1, sequence length 1
+                    context_tensor = torch.zeros((1, 1), dtype=torch.long)  # fallback
 
-                generated_ids = model.generate(context, max_new_tokens=100)
+                generated_ids = model.generate(context_tensor, max_new_tokens=100)
                 decoded_text = tensor_to_text(generated_ids[0], int_to_vocab)
                 
                 text_placeholder.code(decoded_text)
