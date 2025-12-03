@@ -6,6 +6,7 @@ from torch.nn import functional as F
 import pandas as pd
 import time
 from models.tiny_gpt import TinyLLM
+from models.gpt import GPT
 
 # --- CONFIGURATION & DATA ---
 # A tiny snippet of Shakespeare for the model to learn from (Fallback data)
@@ -92,7 +93,26 @@ def app():
     # 2. Visualization Placeholders
     st.divider()
     st.subheader("3. Live Training Monitor")
-    
+
+    # --- Initialize session state ---
+    if "model_type" not in st.session_state:
+        st.session_state.model_type = None
+
+    # Model selection buttons
+    sml_model_btn = st.button("🧠 Small model", type="primary")
+    big_model_btn = st.button("🤖 Big model", type="primary")
+
+    if sml_model_btn:
+        st.session_state.model_type = "small"
+
+    if big_model_btn:
+        st.session_state.model_type = "big"
+
+    st.caption(f"Selected Model: {st.session_state.model_type}")
+
+    start_btn = st.button("🚀 Start Training", type="primary")
+
+    #------chart visualisation------
     col_chart, col_preview = st.columns([2, 1])
     
     with col_chart:
@@ -101,12 +121,17 @@ def app():
     with col_preview:
         st.markdown("**Model Output Evolution**")
         text_placeholder = st.empty()
-        
-    start_btn = st.button("🚀 Start Training", type="primary")
 
+    #-------run training and generation------
     if start_btn:
-        # Initialize Model
-        model = TinyLLM(vocab_size)
+        if st.session_state.model_type == "small":
+            model = TinyLLM(vocab_size)
+        elif st.session_state.model_type == "big":
+            model = GPT(vocab_size)
+        else:
+            st.warning("Please select a model first!")
+            return
+
         optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
         
         loss_history = []
