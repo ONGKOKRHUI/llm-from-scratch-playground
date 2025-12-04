@@ -2,7 +2,7 @@
 import streamlit as st
 import torch
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
-from llm_factory import get_llm
+import ollama
 
 # --- CACHED MODEL LOADING ---
 # We use @st.cache_resource so we don't redownload the 500MB model every time you click a button.
@@ -25,10 +25,10 @@ def app():
     This lab explores **Inference**: How does the model choose the next word?
     Unlike a calculator (2+2=4), an LLM is probabilistic. We can control its "creativity."
     """)
-
     # 1. Load Resources
     with st.spinner("Loading GPT-2 Model... (this may take a minute first time)"):
         tokenizer, model = load_model()
+        st.success("GPT-2 Model Loaded!")
 
     # 2. Controls & Inputs
     col_controls, col_input = st.columns([1, 2])
