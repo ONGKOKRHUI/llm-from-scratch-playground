@@ -2,7 +2,7 @@
 import streamlit as st
 
 # Import the modules (we will create tokenizer_viz next)
-from modules import tokenizer_viz, training_demo, inference
+from modules import inference_3, tokenizer_viz_1, training_demo_2
 
 # --- PAGE CONFIGURATION ---
 # This must be the first Streamlit command in the whole app
@@ -30,12 +30,12 @@ st.sidebar.info("Project 1: Build an LLM Playground")
 
 # --- PAGE ROUTING ---
 if page == "1. Tokenizer Sandbox":
-    tokenizer_viz.app()
+    tokenizer_viz_1.app()
     
 elif page == "2. Pre-Training":
-    training_demo.app()
+    training_demo_2.app()
 
 elif page == "3. Generation":
-    inference.app()
+    inference_3.app()
 
 # ... (Other pages would be similar)
