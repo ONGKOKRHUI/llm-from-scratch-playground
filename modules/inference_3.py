@@ -2,6 +2,7 @@
 import streamlit as st
 import torch
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
+from llm_factory import get_llm
 
 # --- CACHED MODEL LOADING ---
 # We use @st.cache_resource so we don't redownload the 500MB model every time you click a button.
@@ -81,17 +82,51 @@ def app():
             "pad_token_id": tokenizer.eos_token_id,
             "no_repeat_ngram_size": 2 if strategy != "Greedy Search" else 0 # Prevent "the the the"
         }
-
+        """
+        For every next token, the model outputs a probability distribution:
+        Example:
+        Model is predicting the next word after:
+        "The cat sat on the"
+        It might output:
+        Token	Probability
+        "mat"	0.62
+        "floor"	0.25
+        "bed"	0.10
+        Different decoding strategies use this distribution differently.
+        """
         # Strategy-specific arguments
         if strategy == "Greedy Search":
+            # Always pick the highest probability word at each step.
             gen_kwargs["do_sample"] = False
         
         elif strategy == "Beam Search":
+            """
+            num_beams = 5 → Keep the top 5 most probable sentences-in-progress.
+            Beam search (5 beams) may explore:
+            1.exciting 2.bright 3.uncertain 4.transformative 5.rapidly evolving
+            For each, it continues generating further words and scores the entire sentence.
+            Finally, it picks the best-scoring full sentence.
+            """
             gen_kwargs["do_sample"] = False
             gen_kwargs["num_beams"] = num_beams
             gen_kwargs["early_stopping"] = True
             
         elif strategy == "Random Sampling":
+            """
+            This is the creative mode.
+            Temperature - Controls how "flat" the probability distribution is, higher flatter
+            Top-K - If top_k = 5, and the model predicts 50 possible tokens, we ignore the bottom 45.
+            Top-P - Consider only the smallest set of words whose total probability >= p.
+                    Let the model output a probability distribution over all tokens:
+                    p₁ ≥ p₂ ≥ p₃ ≥ ... ≥ pₙ
+                    Top-P chooses the smallest set of tokens such that:
+                    p₁ + p₂ + ... + p_k ≥ p   (example: p = 0.9)
+                    Within that set, we sample proportionally to their probabilities.
+                    Intuition: Only consider tokens that together make up the top p portion of the model's confidence.
+                    This dynamically adapts:
+                    If distribution is spike-shaped → only 1-2 words selected
+                    If flat → more words selected
+            """
             gen_kwargs["do_sample"] = True
             gen_kwargs["temperature"] = temperature
             gen_kwargs["top_k"] = top_k
