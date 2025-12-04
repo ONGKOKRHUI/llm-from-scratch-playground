@@ -48,18 +48,6 @@ def app():
     This tool visualizes how raw text is broken down into **Tokens** (numbers) that an LLM can read.
     """)
 
-    # Sidebar Controls (Specific to this page)
-    # Note: We use a unique key to avoid conflicts if you add controls in other modules
-    st.sidebar.subheader("Tokenizer Settings")
-    model_name = st.sidebar.selectbox(
-        "Model Encoding", 
-        ["gpt-4", "gpt-3.5-turbo", "text-davinci-003"], 
-        index=0,
-        key="tok_model_select" 
-    )
-    do_clean_html = st.sidebar.checkbox("Remove HTML Tags", value=True, key="tok_clean_html")
-    do_norm_space = st.sidebar.checkbox("Normalize Whitespace", value=False, key="tok_norm_space")
-
     # Input Area
     default_text = """<p>Welcome to the LLM Playground!</p>
 This is an example of how tokenization works.
@@ -70,6 +58,16 @@ Uncommon words like 'neuroscience' or 'antidisestablishmentarianism' might get s
     with col1:
         st.subheader("1. Input Text")
         raw_text = st.text_area("Enter text here:", value=default_text, height=300)
+        # Note: We use a unique key to avoid conflicts if you add controls in other modules
+        st.subheader("Tokenizer Settings")
+        model_name = st.selectbox(
+            "Model Encoding", 
+            ["gpt-4", "gpt-3.5-turbo", "text-davinci-003"], 
+            index=0,
+            key="tok_model_select" 
+        )
+        do_clean_html = st.checkbox("Remove HTML Tags", value=True, key="tok_clean_html")
+        do_norm_space = st.checkbox("Normalize Whitespace", value=False, key="tok_norm_space")
 
     # Process Logic
     try:
