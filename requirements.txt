@@ -3,3 +3,16 @@ transformers
 streamlit
 tiktoken
 datasets
+
+langchain
+langchain-community
+langchain-ollama
+langchain-chroma
+chromadb
+pypdf
+docx2txt
+scikit-learn
+scipy
+numpy
+langchain-openai
+langchain-google-genai
