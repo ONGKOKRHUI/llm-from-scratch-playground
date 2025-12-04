@@ -2,7 +2,8 @@
 import streamlit as st
 import torch
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
-import ollama
+import pandas as pd
+import altair as alt
 
 # --- CACHED MODEL LOADING ---
 # We use @st.cache_resource so we don't redownload the 500MB model every time you click a button.
@@ -17,6 +18,37 @@ def load_model():
     model.config.pad_token_id = model.config.eos_token_id
     
     return tokenizer, model
+# --- HELPER: PROBABILITY VISUALIZER ---
+def plot_top_k(model, tokenizer, text_input, k=10):
+    """
+    Runs a single forward pass to get the probabilities of the NEXT token.
+    """
+    inputs = tokenizer(text_input, return_tensors="pt")
+    
+    # Run the model (no generation, just one forward pass)
+    with torch.no_grad():
+        outputs = model(**inputs)
+    
+    # Get logits for the LAST token in the sequence
+    next_token_logits = outputs.logits[0, -1, :]
+    
+    # Convert logits to probabilities (Softmax)
+    probs = torch.nn.functional.softmax(next_token_logits, dim=-1)
+    
+    # Get the top K candidates
+    top_k_probs, top_k_indices = torch.topk(probs, k)
+    
+    # Decode indices to words
+    # We strip whitespace to make the chart labels cleaner
+    top_k_tokens = [tokenizer.decode([idx]).strip() for idx in top_k_indices]
+    
+    # Create DataFrame for Charting
+    df = pd.DataFrame({
+        "Token": top_k_tokens,
+        "Probability": top_k_probs.tolist()
+    })
+    
+    return df
 
 # --- MAIN PAGE LOGIC ---
 def app():
@@ -24,16 +56,20 @@ def app():
     st.markdown("""
     This lab explores **Inference**: How does the model choose the next word?
     Unlike a calculator (2+2=4), an LLM is probabilistic. We can control its "creativity."
-    """)
+    The **Bar Chart** shows the top 10 words the model is considering for the *next* step.
+                """)
     # 1. Load Resources
     with st.spinner("Loading GPT-2 Model... (this may take a minute first time)"):
         tokenizer, model = load_model()
         st.success("GPT-2 Model Loaded!")
+    
+    st.subheader("📝 Input Prompt")
+    prompt_text = st.text_area("Start a sentence:", value="The secret to artificial intelligence is", height=100)
 
     # 2. Controls & Inputs
-    col_controls, col_input = st.columns([1, 2])
+    col_left, col_right = st.columns([1, 1.5])
 
-    with col_controls:
+    with col_left:
         st.subheader("⚙️ The Knobs")
         
         # Decoding Strategy Selector
@@ -66,11 +102,27 @@ def app():
                 help="How many future paths to explore simultaneously.")
             st.caption("Beam search finds the 'best' overall sentence, not just the next word.")
 
-    with col_input:
-        st.subheader("📝 Input Prompt")
-        prompt_text = st.text_area("Start a sentence:", value="The secret to artificial intelligence is", height=100)
-        
         generate_btn = st.button("✨ Generate Text", type="primary")
+
+    # --- RIGHT COLUMN: VISUALIZATION ---
+    with col_right:
+        st.subheader("3. Next Token Probability")
+        
+        if prompt_text:
+            # Calculate probabilities for the *very next word* based on current input
+            df_probs = plot_top_k(model, tokenizer, prompt_text, k=10)
+            
+            # Create a nice Altair Bar Chart
+            chart = alt.Chart(df_probs).mark_bar().encode(
+                x=alt.X('Probability', axis=alt.Axis(format='%')),
+                y=alt.Y('Token', sort='-x', title="Candidate Word"),
+                color=alt.Color('Probability', legend=None),
+                tooltip=['Token', alt.Tooltip('Probability', format='.2%')]
+            ).properties(height=300)
+            
+            st.altair_chart(chart, use_container_width=True)
+            
+            st.caption("These are the words the model is deciding between right now!") 
 
     # 3. Generation Logic
     if generate_btn:

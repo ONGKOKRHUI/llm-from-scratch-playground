@@ -2,7 +2,7 @@
 import streamlit as st
 
 # Import the modules (we will create tokenizer_viz next)
-from modules import inference_3, tokenizer_viz_1, training_demo_2
+from modules import tokenizer_viz_1, training_demo_2, inference_3, fine_tuning_4
 
 # --- PAGE CONFIGURATION ---
 # This must be the first Streamlit command in the whole app
@@ -20,7 +20,7 @@ page = st.sidebar.radio(
         "1. Tokenizer Sandbox", 
         "2. Pre-Training", 
         "3. Generation",
-        "4. Post-Training",
+        "4. Fine-Tuning",
         "5. Evaluation"
     ]
 )
@@ -37,5 +37,8 @@ elif page == "2. Pre-Training":
 
 elif page == "3. Generation":
     inference_3.app()
+
+elif page == "4. Fine-Tuning":
+    fine_tuning_4.app()
 
 # ... (Other pages would be similar)

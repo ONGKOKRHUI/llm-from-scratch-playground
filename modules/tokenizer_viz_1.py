@@ -2,6 +2,7 @@
 import streamlit as st
 import tiktoken
 import re
+import html
 
 # --- HELPER FUNCTIONS ---
 def clean_text_data(text, remove_html=True, remove_digits=False, normalize_whitespace=True):
@@ -23,6 +24,8 @@ def get_colored_token_html(tokens, encoding):
     for i, token_id in enumerate(tokens):
         try:
             token_text = encoding.decode([token_id])
+            #html.escape(token_text) replaces < → &lt;, > → &gt;, & → &amp;
+            token_text = html.escape(token_text)
             display_text = token_text.replace(' ', '&nbsp;').replace('\n', '<br>')
             if not display_text: display_text = ""
             color = colors[i % len(colors)]
