@@ -46,21 +46,44 @@ def save_feedback(prompt, chosen, rejected):
 
 # --- LORA IMPLEMENTATION (Educational) ---
 class LoRALayer(nn.Module):
+    """
+    LoRA (Low-Rank Adaptation) is a technique to fine-tune massive models efficiently. Instead of updating all billions of parameters, it:
+    Freezes the main model’s weights (no gradient updates, no memory overhead for training).
+    Adds small trainable “adapter” matrices that approximate the change needed to learn the new task.
+    Mathematically, if the original weight matrix is 
+    W, LoRA updates it like this:
+    𝑊new = 𝑊frozen + 𝛼(𝐴⋅𝐵)
+    Where:
+    𝑊frozen = original, frozen weight
+    A = small low-rank matrix projecting down
+    B = small low-rank matrix projecting back up
+    α = scaling factor to control contribution of LoRA path
+    The idea is that A⋅B is a low-rank approximation of the change you want, which requires way fewer parameters than training 
+    W fully.
+    """
     def __init__(self, in_dim, out_dim, rank, alpha):
+        """
+        in_dim: input dimension of your layer (hidden size)
+        out_dim: output dimension (hidden size for the linear layer)
+        rank: the “low-rank” size of the adapters. Lower rank → fewer trainable parameters.
+        alpha: a scaling factor controlling how much the LoRA adapters affect the output
+        """
         super().__init__()
         self.rank = rank
         self.alpha = alpha
         
         # 1. The Frozen Pre-trained Weight (Simulated large matrix)
+        #obtains the original parameter weights 
+        #requires_grad=False ensures it does not get updated during training.
         self.weight = nn.Parameter(torch.randn(in_dim, out_dim), requires_grad=False)
         
         # 2. The Trainable Low-Rank Matrices (A and B)
-        # Matrix A: (in_dim, rank) -> Projects down
+        # Matrix A: (in_dim, rank) -> projects the input down to a smaller “rank” dimension → compresses input.
         self.lora_A = nn.Parameter(torch.randn(in_dim, rank))
-        # Matrix B: (rank, out_dim) -> Projects up
+        # Matrix B: (rank, out_dim) -> projects it back to the output dimension → re-expands.
         self.lora_B = nn.Parameter(torch.zeros(rank, out_dim))
         
-        # Scaling factor
+        # Scaling factor - adjusts the magnitude of the LoRA contribution.
         self.scaling = alpha / rank
 
     def forward(self, x):
