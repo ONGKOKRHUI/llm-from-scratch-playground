@@ -87,11 +87,11 @@ class LoRALayer(nn.Module):
         self.scaling = alpha / rank
 
     def forward(self, x):
-        # The Original Path (Frozen)
+        # The Original Path (Frozen) computes the original linear transformation (frozen, no learning).
         original_out = x @ self.weight
         
-        # The LoRA Path (Trainable)
-        # x -> A -> B -> Scale
+        # The LoRA Path (Trainable) computes the learnable delta.
+        # x -> A -> B -> Scale -- Multiply by scaling to control magnitude.
         lora_out = (x @ self.lora_A @ self.lora_B) * self.scaling
         
         # Combine
