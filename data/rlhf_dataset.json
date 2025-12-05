@@ -3,5 +3,20 @@
         "prompt": "Explain quantum physics like I'm 5.",
         "chosen": "Explain quantum physics like I'm 5. I know of no higher theory (suchly what Newton does/does/that if only he were to see all the mathematics behind it). All there",
         "rejected": "Explain quantum physics like I'm 5. It's an amazing world now, it doesn't surprise me a peep.\"\n\nIt's a rare pleasure, he says. \"[My colleagues"
+    },
+    {
+        "prompt": "Explain quantum physics like I'm 5.",
+        "chosen": "Explain quantum physics like I'm 5. If I didn't do maths, I wouldn't be good at it either. In this scenario, what is the most important thing in your life?",
+        "rejected": "Explain quantum physics like I'm 5.3 seconds faster, I am more conscious, and I have a greater ability to be silent that makes sure that I won't have to answer questions that"
+    },
+    {
+        "prompt": "The capital of France is",
+        "chosen": "The capital of France is to be visited by three separate foreign secretaries, each visiting separately.\n\nThey must present to France an amendment to France's constitution \"which calls for",
+        "rejected": "The capital of France is the capital of this nation and the capital of France. And they are in the midst of a war, a war of national liberation. And what the"
+    },
+    {
+        "prompt": "Explain photosynthesis in simple terms.",
+        "chosen": "Photosynthesize. Photosynthesis is the process in which a plant uses sunlight to make food.",
+        "rejected": "Light is used to power photosynthesis."
     }
 ]

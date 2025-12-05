@@ -13,17 +13,28 @@ FEEDBACK_FILE = "data/rlhf_dataset.json"
 
 # --- CACHED MODEL LOADING ---
 @st.cache_resource
-def load_models():
-    # 1. Base Model
+def load_models(device="cuda"):
+    # 1. Base Model (GPT-2)
     base_name = "gpt2"
+    # Tokenizer for GPT-2
     base_tokenizer = GPT2Tokenizer.from_pretrained(base_name)
+    # Raw causal language model (not instruction-tuned)
     base_model = GPT2LMHeadModel.from_pretrained(base_name)
+    # GPT-2 has no pad token by default, set it manually
     base_tokenizer.pad_token = base_tokenizer.eos_token
-    
-    # 2. Instruct Model
+    # Move model to device and set evaluation mode
+    base_model.to(device)
+    base_model.eval()
+
+    # 2. Instruction-Tuned Model (Flan-T5)
     sft_name = "google/flan-t5-small"
+    # Tokenizer for T5
     sft_tokenizer = AutoTokenizer.from_pretrained(sft_name)
+    # Encoder-decoder model for instruction following
     sft_model = AutoModelForSeq2SeqLM.from_pretrained(sft_name)
+    # Move model to device and set evaluation mode
+    sft_model.to(device)
+    sft_model.eval()
     
     return (base_tokenizer, base_model), (sft_tokenizer, sft_model)
 
@@ -99,7 +110,9 @@ class LoRALayer(nn.Module):
 
     def get_param_count(self):
         # Calculate distinct parameters
-        frozen = self.weight.numel()
+        #frozen: number of parameters in the main weight (not trainable)
+        frozen = self.weight.numel() #.numel() counts total elements in a tensor.
+        #trainable: number of parameters in LoRA adapters (tiny)
         trainable = self.lora_A.numel() + self.lora_B.numel()
         return frozen, trainable
 
@@ -119,34 +132,56 @@ def app():
         st.session_state.models_loaded = False
 
     # ==========================
-    # TAB 1: SFT BATTLE
+    # TAB 1: SFT BATTLE (Supervised Fine-Tuning VS Base Language Model)
     # ==========================
     with tab_sft:
         st.markdown("### Base Model vs. Instruction Tuned Model")
         
+        # Device selection
+        device_option = st.radio(
+            "Device",
+            ["cpu", "cuda" if torch.cuda.is_available() else "cuda (unavailable)"]
+        )
+        
+        if "device" not in st.session_state:
+            st.session_state.device = "cpu"
+        
+        selected = "cpu" if "unavailable" in device_option else device_option
+        
+        if selected != st.session_state.device:
+            st.session_state.device = selected
+            st.session_state.models_loaded = False
+            st.rerun()
+        
+        # Load button
         if not st.session_state.models_loaded:
             if st.button("Load Models (GPT-2 & Flan-T5)"):
-                with st.spinner("Loading..."):
-                    st.session_state.models = load_models()
+                with st.spinner(f"Loading models on {st.session_state.device}..."):
+                    st.session_state.models = load_models(device=st.session_state.device)
                     st.session_state.models_loaded = True
                     st.rerun()
-            st.warning("Click above to load models into memory.")
         
+        # If models are loaded
         if st.session_state.models_loaded:
             (base_tok, base_model), (sft_tok, sft_model) = st.session_state.models
             
             prompt = st.text_input("Enter a prompt:", value="The capital of France is", key="sft_prompt")
+            
             if st.button("⚔️ Compare Models", type="primary"):
                 c1, c2 = st.columns(2)
                 
-                # Base
+                ######## Base
+                # Tokenize the prompt
                 inputs = base_tok(prompt, return_tensors="pt")
+                # Generate
                 out = base_model.generate(**inputs, max_new_tokens=40, do_sample=False)
+                #Decode back to text: skip_special_tokens=True removes tokens like <pad> or <eos>.
                 res_base = base_tok.decode(out[0], skip_special_tokens=True)
                 c1.info(f"**GPT-2 (Base):**\n\n{res_base}")
                 
                 # SFT
                 inputs = sft_tok(prompt, return_tensors="pt")
+                #Generate output (note: do_sample defaults to deterministic for T5 here).
                 out = sft_model.generate(**inputs, max_new_tokens=40)
                 res_sft = sft_tok.decode(out[0], skip_special_tokens=True)
                 c2.success(f"**Flan-T5 (Instruct):**\n\n{res_sft}")
