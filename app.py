@@ -48,4 +48,8 @@ elif page == "5. RLHF + LoRA + Base":
 elif page == "6. RLHF + LoRA + Instruct":
     rlhf_lora_instruct.app()
 
-# ... (Other pages would be similar)
+elif page == "7. Evaluation":
+    evaluation_5.app()
+
+else:
+    st.write("This page does not exist.")

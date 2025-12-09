@@ -215,9 +215,10 @@ def app():
         
         with col_math:
             st.subheader("🧮 Parameter Calculator")
+            # allows user to decide the model hidden size and output dimension
             d_model = st.number_input("Model Dimension (Hidden Size)", value=4096, step=128)
             d_out = st.number_input("Output Dimension", value=4096, step=128)
-            
+            # Lower r → far fewer trainable parameters.
             rank = st.slider("LoRA Rank (r)", 1, 64, 8, help="Lower rank = fewer parameters.")
             
             # Instantiate our educational layer
@@ -239,16 +240,23 @@ def app():
                 'Parameters': [frozen_params, trainable_params]
             })
             
-            chart = alt.Chart(data).mark_bar().encode(
-                x='Layer Type',
-                y=alt.Y('Parameters', scale=alt.Scale(type='log')), # Log scale is crucial here!
-                color='Layer Type',
-                tooltip=['Parameters']
-            ).properties(title="Log-Scale Comparison (Massive Difference!)")
+            chart = (
+                alt.Chart(data)
+                .mark_bar()
+                .encode(
+                    x=alt.X('Layer Type:N', title='Layer Type'),
+                    y=alt.Y('Parameters:Q', scale=alt.Scale(type='linear'), title='Parameters'),
+                    color='Layer Type:N',
+                    tooltip=['Layer Type:N', 'Parameters:Q']
+                )
+                .properties(
+                    title="Comparison of Parameters"
+                )
+            )
             
             st.altair_chart(chart, use_container_width=True)
             
-            st.info("Notice the Y-axis is Logarithmic. In reality, the orange bar (LoRA) is invisible compared to the blue one.")
+            st.info("Notice the number of parameters tunable for LoRA compared to full fine-tuning is significantly lower.")
             
         st.divider()
         st.subheader("The Code Behind It")
