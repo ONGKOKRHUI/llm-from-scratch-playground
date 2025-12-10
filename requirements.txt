@@ -36,3 +36,7 @@ google-generativeai
 
 #env
 python-dotenv
+
+#web scraping
+beautifulsoup4 
+requests

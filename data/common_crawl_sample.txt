@@ -1,0 +1,109 @@
+WARC/1.0
+WARC-Type: conversion
+WARC-Target-URI: http://www.example-tech-blog.com/2023/rust-vs-cpp
+WARC-Date: 2023-10-15T14:02:01Z
+WARC-Record-ID: <urn:uuid:3863c09e-73a7-4b89-92f3-0873892873>
+WARC-Refers-To: <urn:uuid:8372b128-82b9-4910-8291-9283719827>
+WARC-Block-Digest: sha1:W7382837283728372837283
+Content-Type: text/plain
+Content-Length: 1420
+
+Home
+Articles
+About Us
+Contact
+Subscribe
+Login
+
+The Future of Systems Programming: Rust vs C++
+By Jonathan Doe | October 12, 2023
+
+For decades, C++ has held the crown for systems programming. It offers unparalleled control over memory and hardware. However, the rise of Rust has introduced a serious contender to the throne.
+
+Rust’s primary selling point is memory safety without garbage collection. Through its ownership model, it prevents data races at compile time—a class of bugs that has plagued C++ developers for years.
+
+"I switched to Rust three years ago and haven't looked back," says Sarah Jenkins, a Senior Backend Engineer. "The compiler is strict, but it teaches you to write better code."
+
+Comments:
+- user123: C++ is still faster in my benchmarks.
+- rust_fan: Safety matters more than a 1% speed difference.
+
+Recent Posts:
+* Python 3.12 Features
+* Introduction to Kubernetes
+* Best Mechanical Keyboards 2023
+
+Footer:
+Copyright © 2023 Tech Blog Example. All rights reserved.
+Privacy Policy | Terms of Service
+Follow us on Twitter | GitHub
+
+WARC/1.0
+WARC-Type: conversion
+WARC-Target-URI: http://www.local-gardening-forum.org/threads/tomatoes-turning-yellow
+WARC-Date: 2023-10-15T14:02:05Z
+WARC-Record-ID: <urn:uuid:1293c09e-12a7-4b89-92f3-1273892873>
+WARC-Refers-To: <urn:uuid:5552b128-82b9-4910-8291-5553719827>
+WARC-Block-Digest: sha1:A92837482738472837482
+Content-Type: text/plain
+Content-Length: 890
+
+Local Gardening Forum > Vegetables > Tomatoes
+
+[Sticky] Rules of the forum - Please read before posting!
+[Closed] Seed swap 2022
+
+Thread: Why are my tomato leaves turning yellow?
+Started by: GreenThumb99
+
+GreenThumb99:
+Hi everyone, I planted my tomatoes about 6 weeks ago. They were doing great, but suddenly the bottom leaves are turning yellow and spotting. I water them every day. Is it a fungus?
+
+Replies:
+
+GardenerDave:
+It sounds like Early Blight, but it could also be overwatering. Tomatoes don't like "wet feet." Let the soil dry out a bit between waterings.
+
+PlantLady:
++1 on the Early Blight. Try trimming the affected leaves and applying a copper fungicide. Also, make sure you aren't splashing water on the leaves when you irrigate.
+
+[Ad] Buy Organic Fertilizer - 20% OFF
+[Ad] Best Garden Hoses
+
+Next Page > 1 2 3
+
+Powered by ForumSoft
+
+WARC/1.0
+WARC-Type: conversion
+WARC-Target-URI: http://www.shop-cheap-supplies.net/product/4421
+WARC-Date: 2023-10-15T14:02:10Z
+WARC-Record-ID: <urn:uuid:9993c09e-73a7-4b89-92f3-087389999>
+WARC-Refers-To: <urn:uuid:1112b128-82b9-4910-8291-928371111>
+WARC-Block-Digest: sha1:B73828372837283728372
+Content-Type: text/plain
+Content-Length: 600
+
+Office Supplies > Paper > A4
+
+Premium Copy Paper 500 Sheets
+$5.99
+In Stock
+
+Description:
+High quality multipurpose paper. Great for printing, copying, and writing. Bright white. 
+
+Specifications:
+Weight: 80gsm
+Size: A4
+Whiteness: 160 CIE
+
+Customers who bought this also bought:
+- Stapler
+- Blue Ballpoint Pens (12 pack)
+- Paperclips
+
+Add to Cart
+Add to Wishlist
+
+Shipping Info | Returns
